@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Agent {
+  id              String    @id @default(cuid())
+  name            String    @unique
+  role            String
+  emoji           String
+  status          String    @default("offline")
+  currentTaskId   String?
+  lastActivityAt  DateTime  @default(now())
+  currentTask     Task?     @relation("CurrentTask", fields: [currentTaskId], references: [id])
+  assignedTasks   Task[]    @relation("AssignedTasks")
+  sentMessages    Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  events          Event[]
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @default("")
+  status      String    @default("backlog")
+  priority    String    @default("medium")
+  assignedTo  String?
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  agent       Agent?    @relation("AssignedTasks", fields: [assignedTo], references: [id])
+  currentFor  Agent[]   @relation("CurrentTask")
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  fromAgentId String?
+  toAgentId   String?
+  fromLabel   String   @default("system")
+  toLabel     String   @default("all")
+  content     String
+  createdAt   DateTime @default(now())
+  fromAgent   Agent?   @relation("SentMessages", fields: [fromAgentId], references: [id])
+  toAgent     Agent?   @relation("ReceivedMessages", fields: [toAgentId], references: [id])
+}
+
+model Event {
+  id              String    @id @default(cuid())
+  title           String
+  description     String    @default("")
+  startTime       DateTime
+  endTime         DateTime
+  recurrence      String?
+  assignedAgentId String?
+  createdAt       DateTime  @default(now())
+  assignedAgent   Agent?    @relation(fields: [assignedAgentId], references: [id])
+}
