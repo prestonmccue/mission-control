@@ -46,9 +46,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
+    const startup = setTimeout(() => {
+      void fetchData();
+    }, 0);
+    const interval = setInterval(() => {
+      void fetchData();
+    }, 10000);
+    return () => {
+      clearTimeout(startup);
+      clearInterval(interval);
+    };
   }, [fetchData]);
 
   const handleAgentClick = (agent: AgentData) => {

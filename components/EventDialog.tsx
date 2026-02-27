@@ -76,7 +76,7 @@ export default function EventDialog({
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [assignedAgentId, setAssignedAgentId] = useState<string>("");
+  const [assignedAgentId, setAssignedAgentId] = useState<string>("none");
   const [recurrence, setRecurrence] = useState("");
   const [agents, setAgents] = useState<Agent[]>([]);
   const [saving, setSaving] = useState(false);
